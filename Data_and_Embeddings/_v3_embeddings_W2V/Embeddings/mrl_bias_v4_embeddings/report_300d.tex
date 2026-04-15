@@ -1,0 +1,252 @@
+% ═══════════════════════════════════════════════════════════════
+% OVERLEAF INSTRUCTIONS:
+% 1. Upload ALL .png files from the
+%    "Data_and_Embeddings/_v3_embeddings_W2V/Embeddings/mrl_bias_v4_embeddings/plots/"
+%    folder into your Overleaf project.
+% 2. Place them in the same directory as this .tex file (or adjust paths).
+% 3. Required images:
+%    - exp7_l2_norm.png, exp9_jaccard.png, exp3_pca_full.png
+%    - exp6a_cone.png, exp10_svd.png, exp8_wcss.png
+%    - bias_weat.png, bias_direct_bias.png, bias_ripa_mean.png
+%    - bias_ect.png, bias_cluster_purity.png, bias_dashboard.png
+% ═══════════════════════════════════════════════════════════════
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath,amssymb}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{caption}
+\usepackage[utf8]{inputenc}
+
+\title{Geometric and Bias Analysis of MRL-v4 vs Standard Word2Vec\\(300-Dimensional Embeddings)}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+% ───────────────────────────────────────
+\section{Dataset and Training}
+% ───────────────────────────────────────
+
+Both models were trained on a 50-million token subsample of \textbf{The Pile}, producing a shared vocabulary of \textbf{175,523 words}. The embedding dimension is $D=300$ with MRL nesting at $d \in \{50, 100, 150, 200, 250, 300\}$.
+
+The \textbf{Standard} model uses Skip-Gram with Negative Sampling (SGNS, $K=10$ negatives, window=5). The \textbf{MRL-v4} model applies the primary NS loss only at $d=300$ and adds a Relational Distillation (RD) auxiliary loss for each prefix $d < 300$. The RD loss computes KL divergence between teacher ($d=300$, detached) and student ($d$-dim prefix) similarity distributions over a $B \times B$ in-batch cosine similarity matrix, plus a cosine MSE anchor.
+
+This approach was adopted after observing that \textbf{MRL-v3}'s naive per-prefix NS loss allowed the model to minimize loss by inflating L2 norms at low dimensions rather than learning correct angular geometry, leading to topological collapse.
+
+% ───────────────────────────────────────
+\section{Geometric Analysis}
+% ───────────────────────────────────────
+
+\subsection{L2 Norm Evolution}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{exp7_l2_norm.png}
+\caption{Average L2 norm across prefix dimensions by frequency bucket.}
+\label{fig:l2norm}
+\end{figure}
+
+At $d=50$, Standard produces an average L2 norm of $1.828$ (full vocabulary sample) while MRL-v4 produces $1.155$. At $d=300$, they are Std: $4.450$, MRL: $3.659$. The MRL-v4 norms are consistently lower, confirming that the RD objective prevents the magnitude inflation observed in v3.
+
+\subsection{Neighborhood Preservation}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{exp9_jaccard.png}
+\caption{Top-10 Jaccard similarity vs.\ $d=300$ baseline.}
+\label{fig:jaccard}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Jaccard neighborhood preservation.}
+\begin{tabular}{lcc}
+\toprule
+Dim & Standard & MRL-v4 \\
+\midrule
+50  & 0.1089 & \textbf{0.1729} \\
+100 & 0.2354 & \textbf{0.2817} \\
+150 & 0.3436 & \textbf{0.3573} \\
+200 & \textbf{0.4627} & 0.4524 \\
+250 & \textbf{0.6037} & 0.5828 \\
+300 & 1.0000 & 1.0000 \\
+\bottomrule
+\end{tabular}
+\label{tab:jaccard}
+\end{table}
+
+At the 300d scale, MRL-v4 \textbf{outperforms} Standard in neighborhood preservation at the two lowest prefix levels: $d=50$ (+58.8\% relative) and $d=100$ (+19.7\%). The models converge around $d=150$ and Standard becomes marginally better at $d \geq 200$. This indicates that the RD objective successfully forces low-dimensional prefixes to retain the full-dimensional neighborhood structure, precisely as designed.
+
+\textbf{Comparison with 768d:} At the 768d scale, the opposite pattern was observed---Standard preserved neighborhoods better than MRL-v4 at every prefix level. This suggests that the RD objective is more effective at the 300d scale where the ratio between full and prefix dimensions is smaller (6:1 for 50/300 vs 12:1 for 64/768), making the distillation signal more tractable.
+
+\subsection{PCA and SVD}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{exp3_pca_full.png}
+\caption{Cumulative explained variance for top 50 PCs.}
+\label{fig:pca}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{exp10_svd.png}
+\caption{Normalized SVD spectrum.}
+\label{fig:svd}
+\end{figure}
+
+Both models show comparable explained variance profiles. The SVD spectrum confirms MRL-v4 acts as an information bottleneck, concentrating slightly more variance into the leading singular values.
+
+\subsection{Narrow Cone}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{exp6a_cone.png}
+\caption{Cosine similarity to mean vector distribution.}
+\label{fig:cone}
+\end{figure}
+
+Both models exhibit the narrow cone phenomenon. At $d=50$, the MRL-v4 cone is narrower (higher average cosine to mean), consistent with its lower L2 norms concentrating vectors angularly.
+
+% ───────────────────────────────────────
+\section{Bias Evaluation}
+% ───────────────────────────────────────
+
+\subsection{Results}
+
+\begin{table}[H]
+\centering
+\caption{Bias metrics --- Standard Word2Vec (300d).}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+Metric & $d=50$ & $d=100$ & $d=150$ & $d=200$ & $d=250$ & $d=300$ \\
+\midrule
+WEAT          & 0.287 & 1.244 & 1.281 & 1.390 & 1.581 & 1.653 \\
+DirectBias    & 0.107 & 0.068 & 0.045 & 0.045 & 0.038 & 0.052 \\
+RIPA (mean)   & 0.200 & 0.181 & 0.144 & 0.166 & 0.160 & 0.243 \\
+RIPA (max)    & 0.669 & 0.501 & 0.357 & 0.413 & 0.461 & 0.619 \\
+ECT ($\rho$)  & 0.648 & 0.747 & 0.679 & 0.695 & 0.730 & 0.732 \\
+Cluster Pur.  & 0.688 & 0.625 & 0.938 & 0.875 & 0.875 & 0.938 \\
+\bottomrule
+\end{tabular}
+\label{tab:bias_std}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Bias metrics --- MRL-v4 (300d).}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+Metric & $d=50$ & $d=100$ & $d=150$ & $d=200$ & $d=250$ & $d=300$ \\
+\midrule
+WEAT          & 1.328 & 1.555 & 1.472 & 1.664 & 1.643 & 1.694 \\
+DirectBias    & 0.110 & 0.072 & 0.100 & 0.066 & 0.061 & 0.051 \\
+RIPA (mean)   & 0.121 & 0.128 & 0.211 & 0.183 & 0.195 & 0.178 \\
+RIPA (max)    & 0.440 & 0.344 & 0.511 & 0.522 & 0.547 & 0.639 \\
+ECT ($\rho$)  & 0.776 & 0.821 & 0.907 & 0.895 & 0.873 & 0.794 \\
+Cluster Pur.  & 0.750 & 0.813 & 0.563 & 0.813 & 0.625 & 0.875 \\
+\bottomrule
+\end{tabular}
+\label{tab:bias_mrl}
+\end{table}
+
+\subsection{WEAT}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{bias_weat.png}
+\caption{WEAT effect size across dimensions.}
+\label{fig:weat}
+\end{figure}
+
+Standard Word2Vec shows a steep WEAT increase from $d=50$ ($0.287$) to $d=300$ ($1.653$). MRL-v4 starts higher at $d=50$ ($1.328$) and remains relatively stable across dimensions, converging with Standard at $d=300$ ($1.694$). The higher MRL-v4 WEAT at $d=50$ likely reflects the Relational Distillation preserving the full-dimensional association structure even in low-dimensional prefixes---the same mechanism that improves Jaccard also preserves bias associations.
+
+\textbf{Comparison with 768d:} At 768d, both models showed consistently high WEAT ($>1.4$) across all dimensions, with less spread. The 300d Standard model's anomalously low WEAT at $d=50$ ($0.287$) suggests that standard truncation at very low dimensions disrupts the bias signal, rather than reducing bias.
+
+\subsection{DirectBias and RIPA}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{bias_direct_bias.png}
+\caption{DirectBias across dimensions.}
+\label{fig:db}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{bias_ripa_mean.png}
+\caption{Mean RIPA across dimensions.}
+\label{fig:ripa}
+\end{figure}
+
+DirectBias is comparable between models, with both showing values in the 0.04--0.11 range. MRL-v4 is slightly higher at $d=50$ and $d=150$ but slightly lower at $d=250$ and $d=300$. Mean RIPA is lower for MRL-v4 at $d=50$ (0.121 vs 0.200) and at $d=300$ (0.178 vs 0.243), indicating reduced projection of neutral words onto the gender direction. The RIPA reduction at $d=50$ is partially attributable to MRL-v4's lower L2 norms.
+
+\subsection{ECT}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{bias_ect.png}
+\caption{ECT Spearman $\rho$ across dimensions.}
+\label{fig:ect}
+\end{figure}
+
+MRL-v4 shows consistently higher ECT ($\rho = 0.776$--$0.907$) than Standard ($\rho = 0.648$--$0.747$) across all prefix dimensions. Higher ECT means better rank agreement between male and female centroids, which can be interpreted as the embedding treating target words more symmetrically with respect to gender. At $d=150$, MRL-v4 achieves its peak ECT of $0.907$, while Standard remains at $0.679$.
+
+\textbf{Comparison with 768d:} At 768d, ECT values for Standard were higher (0.72--0.83) and MRL-v4 showed a similar upward trend from $d=64$ ($0.52$) to $d=512$ ($0.87$). The 300d MRL-v4 ECT is broadly higher than the 768d version, suggesting the RD objective preserves rank coherence more effectively at lower total dimensionality.
+
+\subsection{Cluster Purity}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{bias_cluster_purity.png}
+\caption{K-Means cluster purity ($K=2$).}
+\label{fig:cp}
+\end{figure}
+
+Cluster purity is volatile for both models due to the small sample size (16 words: 8 male + 8 female names). Both models achieve high purity ($\geq 0.8$) at $d=300$. The instability at intermediate dimensions is a limitation of the small attribute word lists rather than a meaningful geometric signal.
+
+% ───────────────────────────────────────
+\section{Cross-Scale Comparison (300d vs 768d)}
+% ───────────────────────────────────────
+
+\begin{table}[H]
+\centering
+\caption{Key metrics at the lowest and highest prefix dimensions, comparing 300d and 768d training.}
+\small
+\begin{tabular}{lcccc}
+\toprule
+ & \multicolumn{2}{c}{Lowest prefix} & \multicolumn{2}{c}{Full dim} \\
+ & 300d ($d$=50) & 768d ($d$=64) & 300d ($d$=300) & 768d ($d$=768) \\
+\midrule
+\textbf{Standard} & & & & \\
+~~Jaccard       & 0.109 & 0.234 & 1.000 & 1.000 \\
+~~WEAT          & 0.287 & 1.677 & 1.653 & 1.708 \\
+~~DirectBias    & 0.107 & 0.119 & 0.052 & 0.097 \\
+~~L2 Norm       & 1.828 & 1.012 & 4.450 & 3.506 \\
+\midrule
+\textbf{MRL-v4} & & & & \\
+~~Jaccard       & 0.173 & 0.154 & 1.000 & 1.000 \\
+~~WEAT          & 1.328 & 1.576 & 1.694 & 1.695 \\
+~~DirectBias    & 0.110 & 0.092 & 0.051 & 0.066 \\
+~~L2 Norm       & 1.155 & 0.590 & 3.659 & 3.438 \\
+\bottomrule
+\end{tabular}
+\label{tab:cross}
+\end{table}
+
+The cross-scale comparison reveals that MRL-v4's Relational Distillation is more effective at 300d than at 768d for neighborhood preservation. At 300d, MRL-v4 improves Jaccard over Standard at the lowest prefix (+58.8\%), while at 768d, MRL-v4 underperforms Standard ($-34.4$\%). This is consistent with the distillation task being harder when the compression ratio is larger (12:1 at 768d vs 6:1 at 300d). Bias metrics (WEAT, DirectBias) converge at full dimension regardless of scale.
+
+% ───────────────────────────────────────
+\section{Conclusion}
+% ───────────────────────────────────────
+
+At the 300d scale, MRL-v4 with Relational Distillation successfully achieves its primary design goal: preserving local neighborhoods at low prefix dimensions better than naive truncation of Standard embeddings. The RD objective prevents magnitude exploitation and produces angular-quality embeddings at $d=50$ and $d=100$. Bias analysis shows that both models encode comparable levels of gender-career associations from the training corpus, with MRL-v4 showing modestly reduced linear bias projections (RIPA) and improved rank coherence (ECT). The training objective does not function as a debiasing mechanism, and explicit post-hoc interventions would be needed to mitigate the observed biases.
+
+\end{document}

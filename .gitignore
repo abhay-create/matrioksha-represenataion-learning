@@ -1,0 +1,25 @@
+# ── Heavy Binary Files ──
+*.npy
+*.pkl
+*.zip
+*.pt
+*.pth
+
+# ── Python ──
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE ──
+.vscode/
+.idea/
+
+# ── Scratch / temp utility output files ──
+Scripts/readlog_out.txt
+Scripts/sim_out.txt

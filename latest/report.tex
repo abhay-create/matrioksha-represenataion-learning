@@ -1,0 +1,281 @@
+% ═══════════════════════════════════════════════════════════════
+% OVERLEAF INSTRUCTIONS:
+% 1. Upload ALL .png files from the "latest/plots/" folder
+% 2. Place them in the same directory as this .tex file
+% 3. Required images:
+%    - exp7_l2_norm.png       (L2 Norm Evolution)
+%    - exp9_jaccard.png       (Neighborhood Preservation)
+%    - exp3_pca_full.png      (PCA Variance)
+%    - exp6a_cone.png         (Narrow Cone)
+%    - exp10_svd.png          (SVD Spectrum)
+%    - exp8_wcss.png          (WCSS Clustering)
+%    - bias_weat.png          (WEAT Effect Size)
+%    - bias_direct_bias.png   (DirectBias)
+%    - bias_ripa_mean.png     (RIPA Mean)
+%    - bias_ect.png           (ECT)
+%    - bias_cluster_purity.png(Cluster Purity)
+%    - bias_dashboard.png     (Combined Bias Dashboard)
+% ═══════════════════════════════════════════════════════════════
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath,amssymb}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[utf8]{inputenc}
+
+\title{Geometric and Bias Analysis of Matryoshka Representation Learning (MRL-v4) vs Standard Word2Vec Embeddings}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+% ───────────────────────────────────────
+\section{Dataset}
+% ───────────────────────────────────────
+
+Both models were trained on a curated 50-million token subsample of \textbf{The Pile}, an open-source language modeling dataset containing diverse, high-quality text spanning academic papers, literature, web text, and technical documentation. The corpus was deduplicated and tokenized to produce a vocabulary of \textbf{175,523 unique words} (minimum frequency threshold applied). This controlled subsample provides a representative distribution of English while keeping training computationally tractable. All models share the same vocabulary and training corpus, ensuring that any observed differences are attributable solely to the training objective.
+
+% ───────────────────────────────────────
+\section{Method}
+% ───────────────────────────────────────
+
+\subsection{Standard Skip-Gram with Negative Sampling (Baseline)}
+
+The baseline model is a standard Word2Vec Skip-Gram trained with Negative Sampling (SGNS). For each center word $w$ and context word $c$ within a window of size 5, the model maximizes:
+\begin{equation}
+\mathcal{L}_{\text{NS}} = \log \sigma(\mathbf{w}^\top \mathbf{c}) + \sum_{i=1}^{K} \mathbb{E}_{n_i \sim P_n} \left[\log \sigma(-\mathbf{w}^\top \mathbf{n}_i)\right]
+\end{equation}
+where $K=10$ negative samples are drawn from a smoothed unigram distribution $P_n(w) \propto f(w)^{0.75}$. The embedding dimension is $D=768$.
+
+\subsection{MRL-v3: Naive Multi-Scale Loss (Previous Version)}
+
+The initial MRL approach (v3) applied an independent Negative Sampling loss at each prefix dimension $d \in \{64, 128, 256, 384, 512, 768\}$ and summed them:
+\begin{equation}
+\mathcal{L}_{\text{MRL-v3}} = \sum_{d \in M} \mathcal{L}_{\text{NS}}^{(d)}
+\end{equation}
+
+\textbf{Issue:} This formulation allows the model to minimize the loss at lower dimensions by inflating L2 norms rather than learning correct angular geometry. Because the dot product $\mathbf{w}^\top \mathbf{c}$ grows with vector magnitude, the optimizer can trivially satisfy $\mathcal{L}_{\text{NS}}^{(d)}$ by stretching vectors without encoding meaningful semantic directions. This resulted in magnitude exploitation and topological collapse at low dimensions.
+
+\subsection{MRL-v4: Relational Distillation (Current Version)}
+
+To address the above pathology, MRL-v4 replaces the per-prefix Negative Sampling with a \textbf{Relational Distillation} (RD) objective. The primary NS loss is applied only at the full dimension $d=768$. For each prefix $d < 768$, the model is trained to match the similarity \textit{distribution} of the full-dimensional ``Teacher'' embedding:
+
+\begin{equation}
+\mathcal{L}_{\text{MRL-v4}} = \mathcal{L}_{\text{NS}}^{(768)} + \frac{1}{|M|-1}\sum_{d < 768} \left[\alpha \cdot D_{\text{KL}}(P_T^{(d)} \| P_S^{(d)}) + \beta \cdot \text{MSE}(\cos_d, \cos_{768})\right]
+\end{equation}
+
+where $P_T^{(d)}$ and $P_S^{(d)}$ are softmax-normalized $B \times B$ pairwise cosine similarity matrices computed over a sub-batch of $B=2048$ words. The Teacher matrix is computed from the 768d embeddings (detached from the gradient), and the Student matrix from the $d$-dimensional prefix, each projected through learned MLP projection heads. The cosine MSE term provides a direct angular constraint. Projection heads are discarded at inference---the raw prefix embeddings are used directly.
+
+% ───────────────────────────────────────
+\section{Geometric Analysis}
+% ───────────────────────────────────────
+
+We evaluate both embedding spaces across 10 geometric experiments at all nesting levels $d \in \{64, 128, 256, 384, 512, 768\}$.
+
+\subsection{L2 Norm Evolution}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{exp7_l2_norm.png}
+\caption{Average L2 norm across prefix dimensions for different frequency buckets.}
+\label{fig:l2norm}
+\end{figure}
+
+At the lowest nesting level ($d=64$), the Standard model produces an average L2 norm of $1.012$ for the full vocabulary sample, while MRL-v4 produces $0.590$. At $d=768$, they converge (Std: $3.506$, MRL: $3.438$). The MRL-v4 norms are consistently lower at truncated dimensions, confirming that the Relational Distillation objective prevents the magnitude inflation observed in MRL-v3. Vectors at low dimensions are forced to encode semantics through angular alignment rather than norm stretching.
+
+\subsection{Neighborhood Preservation (Jaccard Similarity)}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{exp9_jaccard.png}
+\caption{Top-10 Jaccard similarity of truncated neighborhoods vs.\ full $d=768$ baseline.}
+\label{fig:jaccard}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Jaccard neighborhood preservation scores at each prefix dimension.}
+\begin{tabular}{lcc}
+\toprule
+Dimension & Standard & MRL-v4 \\
+\midrule
+64  & 0.2341 & 0.1536 \\
+128 & 0.3604 & 0.2102 \\
+256 & 0.5181 & 0.3184 \\
+384 & 0.6271 & 0.4208 \\
+512 & 0.7200 & 0.5167 \\
+768 & 1.0000 & 1.0000 \\
+\bottomrule
+\end{tabular}
+\label{tab:jaccard}
+\end{table}
+
+The Standard model preserves local neighborhoods better than MRL-v4 at every truncation level. At $d=64$, Standard retains 23.4\% of its $d=768$ neighbors while MRL-v4 retains 15.4\%. This indicates that the Relational Distillation objective, while preventing magnitude exploitation, encodes the full-dimensional information differently at intermediate prefix levels. The MRL-v4 embedding space is structurally reorganized such that the truncated prefix captures different geometric relationships than a simple slice of the Standard space.
+
+\subsection{PCA Information Capacity}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{exp3_pca_full.png}
+\caption{Cumulative explained variance ratio for the top 50 principal components.}
+\label{fig:pca}
+\end{figure}
+
+PCA on a random sample of 10,000 words shows that the top 50 principal components explain a comparable fraction of variance for both models, indicating that MRL-v4 does not distort the overall spectral profile of the embedding matrix at full dimension.
+
+\subsection{Narrow Cone and Non-Negativity (Mimno \& Thompson, 2017)}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{exp6a_cone.png}
+\caption{Distribution of cosine similarity to the mean vector (the ``narrow cone'' phenomenon).}
+\label{fig:cone}
+\end{figure}
+
+Both models exhibit the well-documented narrow cone phenomenon where all word vectors cluster within a restricted angular region around the mean vector. At $d=64$, the MRL-v4 cone is narrower, consistent with the Relational Distillation objective forcing angular compression at low dimensions. Non-negativity analysis confirms both models maintain approximately 50\% positive components per dimension, indicating no systematic sign bias.
+
+\subsection{SVD Spectrum}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{exp10_svd.png}
+\caption{Normalized singular value decay (log-scale x-axis).}
+\label{fig:svd}
+\end{figure}
+
+The SVD spectrum reveals that MRL-v4 concentrates slightly more variance into the leading singular values compared to the Standard model, consistent with its role as an information bottleneck that pushes core semantics into early dimensions.
+
+% ───────────────────────────────────────
+\section{Bias Evaluation}
+% ───────────────────────────────────────
+
+We evaluate social bias using 7 complementary metrics. Each captures a different geometric manifestation of bias.
+
+\subsection{Results Summary}
+
+\begin{table}[H]
+\centering
+\caption{Bias metrics for Standard Word2Vec across prefix dimensions.}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+Metric & $d=64$ & $d=128$ & $d=256$ & $d=384$ & $d=512$ & $d=768$ \\
+\midrule
+WEAT          & 1.677 & 1.414 & 1.727 & 1.747 & 1.800 & 1.708 \\
+DirectBias    & 0.119 & 0.117 & 0.106 & 0.108 & 0.105 & 0.097 \\
+RIPA (mean)   & 0.108 & 0.156 & 0.201 & 0.250 & 0.281 & 0.320 \\
+RIPA (max)    & 0.206 & 0.386 & 0.655 & 0.775 & 0.753 & 0.810 \\
+ECT ($\rho$)  & 0.818 & 0.828 & 0.785 & 0.730 & 0.721 & 0.762 \\
+Cluster Pur.  & 0.563 & 0.563 & 0.750 & 0.938 & 1.000 & 0.938 \\
+\bottomrule
+\end{tabular}
+\label{tab:bias_std}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Bias metrics for MRL-v4 across prefix dimensions.}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+Metric & $d=64$ & $d=128$ & $d=256$ & $d=384$ & $d=512$ & $d=768$ \\
+\midrule
+WEAT          & 1.576 & 1.430 & 1.150 & 1.608 & 1.656 & 1.695 \\
+DirectBias    & 0.092 & 0.086 & 0.063 & 0.084 & 0.091 & 0.066 \\
+RIPA (mean)   & 0.046 & 0.070 & 0.091 & 0.173 & 0.238 & 0.202 \\
+RIPA (max)    & 0.152 & 0.206 & 0.351 & 0.448 & 0.511 & 0.396 \\
+ECT ($\rho$)  & 0.523 & 0.742 & 0.734 & 0.831 & 0.870 & 0.813 \\
+Cluster Pur.  & 0.875 & 1.000 & 1.000 & 0.938 & 1.000 & 0.938 \\
+\bottomrule
+\end{tabular}
+\label{tab:bias_mrl}
+\end{table}
+
+\subsection{WEAT (Word Embedding Association Test)}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{bias_weat.png}
+\caption{WEAT effect size (Career/Family $\times$ Male/Female names) across dimensions.}
+\label{fig:weat}
+\end{figure}
+
+Both models exhibit large WEAT effect sizes ($d > 1.0$), confirming that substantial gender-career/family associations are encoded from the training corpus. MRL-v4 shows a notable dip at $d=256$ (effect size 1.150 vs Standard's 1.727), but converges to comparable levels at $d=768$ (1.695 vs 1.708). The reduction at intermediate dimensions suggests that the Relational Distillation objective partially disrupts the linear alignment of career/family associations with gendered attribute words at those prefix levels. However, the bias is not eliminated---it persists in the full-dimensional representation.
+
+\subsection{DirectBias}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{bias_direct_bias.png}
+\caption{DirectBias score (mean $|\cos(w, g)|$ for neutral occupations).}
+\label{fig:directbias}
+\end{figure}
+
+MRL-v4 consistently produces lower DirectBias scores across all dimensions (0.066 vs 0.097 at $d=768$; 0.092 vs 0.119 at $d=64$). This indicates that neutral occupation words are less aligned with the gender direction in MRL-v4's embedding space. The reduction is modest (approximately 22--32\% relative) but consistent across the full cascade.
+
+\subsection{RIPA (Relational Inner Product Association)}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{bias_ripa_mean.png}
+\caption{Mean absolute RIPA over neutral occupation words.}
+\label{fig:ripa}
+\end{figure}
+
+RIPA captures the unnormalized projection magnitude onto the gender direction. MRL-v4 shows substantially lower RIPA at low dimensions (mean: 0.046 vs 0.108 at $d=64$; max: 0.152 vs 0.206). This is partially attributable to MRL-v4's lower L2 norms at truncated levels. At $d=768$, MRL-v4's mean RIPA (0.202) is lower than Standard's (0.320), indicating reduced gender projection even at full dimension. This is consistent with the Relational Distillation objective distributing semantic content across a different geometric structure.
+
+\subsection{ECT (Embedding Coherence Test)}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{bias_ect.png}
+\caption{ECT Spearman $\rho$ (rank correlation between male/female centroid distances).}
+\label{fig:ect}
+\end{figure}
+
+ECT measures whether male and female centroids rank target words identically ($\rho = 1$ indicates no rank divergence). Standard maintains relatively stable ECT across dimensions (0.72--0.83). MRL-v4 starts lower at $d=64$ ($\rho = 0.523$) but climbs to 0.870 at $d=512$, exceeding the Standard model. The low ECT at $d=64$ for MRL-v4 indicates that the rank structure between gender centroids is disrupted at extreme compression, which could be interpreted as either reduced structural bias or degraded semantic coherence at that level.
+
+\subsection{Cluster Purity}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{bias_cluster_purity.png}
+\caption{K-Means ($K=2$) cluster purity for male/female attribute words.}
+\label{fig:cluster}
+\end{figure}
+
+Cluster purity measures whether an unsupervised K-Means algorithm can separate male from female attribute words. MRL-v4 achieves high cluster purity even at low dimensions (0.875 at $d=64$, 1.000 at $d=128$), while Standard starts at near-random (0.563 at $d=64$). This indicates that MRL-v4's low-dimensional prefixes retain clearer gender-attribute separability. At $d=768$, both models converge to 0.938. The high cluster purity in MRL-v4 at low dimensions, combined with its lower DirectBias and RIPA scores, suggests that gender information is structurally encoded in the clustering geometry even when linear projections onto the gender direction are reduced.
+
+\subsection{Bias Analogy Test}
+
+At $d=768$, both models produce stereotypical analogy completions for the query ``he:she :: [occupation]:?''. For example, ``soldier $\rightarrow$ her'', ``housekeeper $\rightarrow$ husband/sisters'', and ``carpenter $\rightarrow$ lucy/emily''. These completions confirm that gender associations from the training corpus are encoded in both embedding spaces. The analogy patterns are qualitatively similar between models, consistent with both being trained on the same corpus.
+
+% ───────────────────────────────────────
+\section{Discussion}
+% ───────────────────────────────────────
+
+The results reveal a nuanced picture of how MRL-v4's Relational Distillation objective affects both geometric structure and bias encoding:
+
+\begin{enumerate}
+    \item \textbf{Geometric Reorganization:} MRL-v4 does not simply compress the Standard embedding space. The lower Jaccard scores indicate that prefix truncations capture a fundamentally different subset of neighborhood relationships. The Relational Distillation objective creates a new geometric layout optimized for distributional similarity preservation rather than simple spatial truncation.
+    
+    \item \textbf{Reduced Linear Bias Projections:} MRL-v4 consistently shows lower DirectBias and RIPA scores, indicating that neutral words have less spurious alignment with the gender direction. This reduction is present at both low and full dimensions, suggesting that the Relational Distillation objective partially reorganizes the gender subspace.
+    
+    \item \textbf{Persistent Structural Bias:} Despite reduced linear projections, the high Cluster Purity scores in MRL-v4 indicate that gender information remains structurally encoded. This is consistent with the ``Lipstick on a Pig'' finding (Gonen \& Goldberg, 2019): reducing linear bias does not eliminate structural bias from the embedding geometry.
+    
+    \item \textbf{WEAT Stability:} Both models produce large WEAT effect sizes ($>1.0$) at most dimensions, confirming that corpus-level gender-career associations are robustly encoded regardless of the training objective. The MRL-v4 dip at $d=256$ is notable but does not represent systematic debiasing.
+\end{enumerate}
+
+% ───────────────────────────────────────
+\section{Conclusion}
+% ───────────────────────────────────────
+
+MRL-v4 with Relational Distillation successfully prevents the magnitude exploitation observed in MRL-v3 and produces geometrically sound multi-resolution embeddings. The bias analysis reveals that while MRL-v4 reduces linear bias projections (DirectBias, RIPA) by 22--57\% relative to Standard Word2Vec, structural bias persists as measured by Cluster Purity and WEAT. The training objective provides a modest, incidental reduction in certain bias metrics but should not be considered a debiasing method. Explicit debiasing techniques would need to be applied post-hoc if bias reduction is a primary objective.
+
+\end{document}

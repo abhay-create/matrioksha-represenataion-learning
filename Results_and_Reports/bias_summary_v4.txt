@@ -1,0 +1,64 @@
+
+=== STANDARD ===
+  Dim |    WEAT | DirBias |  RIPA_m |  RIPA_x |     ECT |     NBM |  ClustP
+---------------------------------------------------------------------------
+   50 |  0.2871 |  0.1067 |  0.1997 |  0.6691 |  0.6479 |  0.0000 |  0.6875
+  100 |  1.2439 |  0.0683 |  0.1809 |  0.5011 |  0.7467 |  0.0500 |  0.6250
+  150 |  1.2813 |  0.0450 |  0.1441 |  0.3574 |  0.6790 |  0.0000 |  0.9375
+  200 |  1.3897 |  0.0447 |  0.1659 |  0.4132 |  0.6952 |  0.1500 |  0.8750
+  250 |  1.5814 |  0.0380 |  0.1602 |  0.4605 |  0.7302 |  0.1500 |  0.8750
+  300 |  1.6526 |  0.0524 |  0.2433 |  0.6188 |  0.7315 |  0.0500 |  0.9375
+
+=== MRL_V4 ===
+  Dim |    WEAT | DirBias |  RIPA_m |  RIPA_x |     ECT |     NBM |  ClustP
+---------------------------------------------------------------------------
+   50 |  1.3279 |  0.1096 |  0.1207 |  0.4402 |  0.7755 |  0.0500 |  0.7500
+  100 |  1.5549 |  0.0717 |  0.1278 |  0.3441 |  0.8206 |  0.0000 |  0.8125
+  150 |  1.4719 |  0.0995 |  0.2112 |  0.5113 |  0.9071 |  0.0000 |  0.5625
+  200 |  1.6644 |  0.0656 |  0.1827 |  0.5222 |  0.8947 |  0.0000 |  0.8125
+  250 |  1.6432 |  0.0612 |  0.1951 |  0.5468 |  0.8726 |  0.0000 |  0.6250
+  300 |  1.6939 |  0.0509 |  0.1777 |  0.6392 |  0.7938 |  0.0000 |  0.8750
+
+=== STANDARD Analogies (d=300) ===
+  he:she :: doctor          -> doctor,         (sim=0.5583)
+  he:she :: nurse           -> nurses          (sim=0.5604)
+  he:she :: engineer        -> engineer,       (sim=0.5125)
+  he:she :: teacher         -> teachers        (sim=0.5782)
+  he:she :: programmer      -> programmer,     (sim=0.5382)
+  he:she :: librarian       -> laura           (sim=0.4621)
+  he:she :: soldier         -> her             (sim=0.4742)
+  he:she :: receptionist    -> her             (sim=0.4993)
+  he:she :: housekeeper     -> her             (sim=0.5303)
+  he:she :: carpenter       -> lady            (sim=0.4146)
+  he:she :: mechanic        -> she's           (sim=0.4074)
+  he:she :: pilot           -> pilots          (sim=0.4061)
+  he:she :: accountant      -> her             (sim=0.4877)
+  he:she :: plumber         -> corly           (sim=0.4994)
+  he:she :: professor       -> christine       (sim=0.5103)
+  he:she :: chef            -> chef.           (sim=0.5593)
+  he:she :: scientist       -> scientistsnodr. (sim=0.5146)
+  he:she :: artist          -> artists         (sim=0.576)
+  he:she :: manager         -> manager.        (sim=0.537)
+  he:she :: secretary       -> secretary,      (sim=0.5673)
+
+=== MRL_V4 Analogies (d=300) ===
+  he:she :: doctor          -> doctor,         (sim=0.626)
+  he:she :: nurse           -> nurses          (sim=0.6648)
+  he:she :: engineer        -> engineer,       (sim=0.6126)
+  he:she :: teacher         -> teaching        (sim=0.6903)
+  he:she :: programmer      -> programmers     (sim=0.5941)
+  he:she :: librarian       -> librarian.      (sim=0.6434)
+  he:she :: soldier         -> niece           (sim=0.5824)
+  he:she :: receptionist    -> dad's           (sim=0.6234)
+  he:she :: housekeeper     -> daughter,       (sim=0.6773)
+  he:she :: carpenter       -> holden,         (sim=0.5808)
+  he:she :: mechanic        -> dad's           (sim=0.5419)
+  he:she :: pilot           -> her             (sim=0.4396)
+  he:she :: accountant      -> accountant,     (sim=0.6729)
+  he:she :: plumber         -> on-the-go       (sim=0.5585)
+  he:she :: professor       -> lecturer        (sim=0.6378)
+  he:she :: chef            -> chef.           (sim=0.6379)
+  he:she :: scientist       -> scientist,      (sim=0.6242)
+  he:she :: artist          -> cobain          (sim=0.6374)
+  he:she :: manager         -> manager's       (sim=0.6415)
+  he:she :: secretary       -> affairs         (sim=0.6369)

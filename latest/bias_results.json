@@ -1,0 +1,328 @@
+{
+  "standard": {
+    "64": {
+      "weat": 1.6766429617815897,
+      "direct_bias": 0.11862872357014567,
+      "ripa_mean": 0.1076056242454797,
+      "ripa_max": 0.20587748289108276,
+      "ect": 0.8182754182754184,
+      "nbm": 0.05,
+      "cluster_purity": 0.5625,
+      "analogies": []
+    },
+    "128": {
+      "weat": 1.4135438671904559,
+      "direct_bias": 0.11697998854797334,
+      "ripa_mean": 0.15548894871026278,
+      "ripa_max": 0.3857143521308899,
+      "ect": 0.8277992277992279,
+      "nbm": 0.05,
+      "cluster_purity": 0.5625,
+      "analogies": []
+    },
+    "256": {
+      "weat": 1.7270220315165108,
+      "direct_bias": 0.1062862136750482,
+      "ripa_mean": 0.20136830694973468,
+      "ripa_max": 0.6554074883460999,
+      "ect": 0.7850707850707851,
+      "nbm": 0.0,
+      "cluster_purity": 0.75,
+      "analogies": []
+    },
+    "384": {
+      "weat": 1.7468959499698404,
+      "direct_bias": 0.10791178644867613,
+      "ripa_mean": 0.25033033043146136,
+      "ripa_max": 0.7744589447975159,
+      "ect": 0.7297297297297298,
+      "nbm": 0.0,
+      "cluster_purity": 0.9375,
+      "analogies": []
+    },
+    "512": {
+      "weat": 1.7998348569351152,
+      "direct_bias": 0.1053631848655641,
+      "ripa_mean": 0.28067473527044057,
+      "ripa_max": 0.7526651620864868,
+      "ect": 0.7212355212355213,
+      "nbm": 0.0,
+      "cluster_purity": 1.0,
+      "analogies": []
+    },
+    "768": {
+      "weat": 1.7080078412406032,
+      "direct_bias": 0.09708954521920532,
+      "ripa_mean": 0.3200535007752478,
+      "ripa_max": 0.810172438621521,
+      "ect": 0.7621621621621621,
+      "nbm": 0.0,
+      "cluster_purity": 0.9375,
+      "analogies": [
+        [
+          "doctor",
+          "doctor.",
+          0.6278
+        ],
+        [
+          "nurse",
+          "care.",
+          0.6471
+        ],
+        [
+          "engineer",
+          "engineer,",
+          0.6027
+        ],
+        [
+          "teacher",
+          "teaching",
+          0.6716
+        ],
+        [
+          "programmer",
+          "programmer.",
+          0.6528
+        ],
+        [
+          "librarian",
+          "instructors,",
+          0.6576
+        ],
+        [
+          "soldier",
+          "her.",
+          0.5818
+        ],
+        [
+          "receptionist",
+          "texted",
+          0.6528
+        ],
+        [
+          "housekeeper",
+          "husband,",
+          0.6923
+        ],
+        [
+          "carpenter",
+          "lucy",
+          0.6171
+        ],
+        [
+          "mechanic",
+          "hobby",
+          0.5921
+        ],
+        [
+          "pilot",
+          "care.",
+          0.4721
+        ],
+        [
+          "accountant",
+          "accountant,",
+          0.6927
+        ],
+        [
+          "plumber",
+          "shower,",
+          0.659
+        ],
+        [
+          "professor",
+          "ph.d.,",
+          0.6395
+        ],
+        [
+          "chef",
+          "chef.",
+          0.6692
+        ],
+        [
+          "scientist",
+          "scientistsnodr.",
+          0.6371
+        ],
+        [
+          "artist",
+          "artist,",
+          0.6539
+        ],
+        [
+          "manager",
+          "manager.",
+          0.6423
+        ],
+        [
+          "secretary",
+          "secretary,",
+          0.6572
+        ]
+      ]
+    }
+  },
+  "mrl_v4": {
+    "64": {
+      "weat": 1.575930733623891,
+      "direct_bias": 0.09218430698383599,
+      "ripa_mean": 0.04639597050845623,
+      "ripa_max": 0.15194757282733917,
+      "ect": 0.5225225225225225,
+      "nbm": 0.1,
+      "cluster_purity": 0.875,
+      "analogies": []
+    },
+    "128": {
+      "weat": 1.4300635854964423,
+      "direct_bias": 0.0863564684346784,
+      "ripa_mean": 0.07043303227983415,
+      "ripa_max": 0.20561417937278748,
+      "ect": 0.7418275418275418,
+      "nbm": 0.05,
+      "cluster_purity": 1.0,
+      "analogies": []
+    },
+    "256": {
+      "weat": 1.1501624741228356,
+      "direct_bias": 0.06304349180718419,
+      "ripa_mean": 0.09062540559098124,
+      "ripa_max": 0.35129061341285706,
+      "ect": 0.7341055341055341,
+      "nbm": 0.1,
+      "cluster_purity": 1.0,
+      "analogies": []
+    },
+    "384": {
+      "weat": 1.6077124553765136,
+      "direct_bias": 0.08430447326973081,
+      "ripa_mean": 0.17261107135564088,
+      "ripa_max": 0.4478461742401123,
+      "ect": 0.830888030888031,
+      "nbm": 0.1,
+      "cluster_purity": 0.9375,
+      "analogies": []
+    },
+    "512": {
+      "weat": 1.6559996601831848,
+      "direct_bias": 0.09103242167038843,
+      "ripa_mean": 0.23817150671966375,
+      "ripa_max": 0.5114376544952393,
+      "ect": 0.8702702702702704,
+      "nbm": 0.0,
+      "cluster_purity": 1.0,
+      "analogies": []
+    },
+    "768": {
+      "weat": 1.694715568815897,
+      "direct_bias": 0.06550143887288869,
+      "ripa_mean": 0.20166179249063135,
+      "ripa_max": 0.39575180411338806,
+      "ect": 0.812870012870013,
+      "nbm": 0.0,
+      "cluster_purity": 0.9375,
+      "analogies": [
+        [
+          "doctor",
+          "doctor,",
+          0.6872
+        ],
+        [
+          "nurse",
+          "nurses",
+          0.6689
+        ],
+        [
+          "engineer",
+          "engineer,",
+          0.6792
+        ],
+        [
+          "teacher",
+          "teaching",
+          0.6687
+        ],
+        [
+          "programmer",
+          "programmer.",
+          0.6648
+        ],
+        [
+          "librarian",
+          "graders.",
+          0.6572
+        ],
+        [
+          "soldier",
+          "husband,",
+          0.6002
+        ],
+        [
+          "receptionist",
+          "son's",
+          0.6343
+        ],
+        [
+          "housekeeper",
+          "sisters,",
+          0.6239
+        ],
+        [
+          "carpenter",
+          "emily,",
+          0.6363
+        ],
+        [
+          "mechanic",
+          "she's",
+          0.5955
+        ],
+        [
+          "pilot",
+          "home-based",
+          0.497
+        ],
+        [
+          "accountant",
+          "katherine",
+          0.6599
+        ],
+        [
+          "plumber",
+          "bathroom,",
+          0.6101
+        ],
+        [
+          "professor",
+          "lecturer",
+          0.6759
+        ],
+        [
+          "chef",
+          "chef.",
+          0.6822
+        ],
+        [
+          "scientist",
+          "biologist",
+          0.6252
+        ],
+        [
+          "artist",
+          "artist.",
+          0.6986
+        ],
+        [
+          "manager",
+          "manager.",
+          0.611
+        ],
+        [
+          "secretary",
+          "secretary,",
+          0.6502
+        ]
+      ]
+    }
+  }
+}

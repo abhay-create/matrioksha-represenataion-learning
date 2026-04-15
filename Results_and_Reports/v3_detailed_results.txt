@@ -1,0 +1,47 @@
+Loading embeddings and vocabulary...
+Standard shape: (175523, 300), MRL shape: (175523, 300)
+
+--- Exp 1: Mean Embedding Dot Product ---
+Level 50 : Cosine Similarity = -0.1374
+Level 100: Cosine Similarity = -0.0606
+Level 150: Cosine Similarity = -0.0089
+Level 200: Cosine Similarity = -0.0247
+Level 250: Cosine Similarity = -0.0129
+Level 300: Cosine Similarity = -0.0272
+
+--- Exp 2: Cross Dot Product scaled by Vocab Size ---
+Level 50 : Avg Cos Sim (Std_w, Mrl_mean) = -0.0527, (Mrl_w, Std_mean) = -0.0895
+Level 100: Avg Cos Sim (Std_w, Mrl_mean) = -0.0242, (Mrl_w, Std_mean) = -0.0370
+Level 150: Avg Cos Sim (Std_w, Mrl_mean) = -0.0033, (Mrl_w, Std_mean) = -0.0086
+Level 200: Avg Cos Sim (Std_w, Mrl_mean) = -0.0093, (Mrl_w, Std_mean) = -0.0150
+Level 250: Avg Cos Sim (Std_w, Mrl_mean) = -0.0046, (Mrl_w, Std_mean) = -0.0091
+Level 300: Avg Cos Sim (Std_w, Mrl_mean) = -0.0107, (Mrl_w, Std_mean) = -0.0147
+
+--- Exp 3: PCA on Random Sample of Full Vocabulary ---
+Top 50 PCs EVR -> Std: 0.5937, MRL: 0.6195
+
+--- Exp 4: PCA by Frequency Bucket ---
+Bucket Top 100 Top 50 PCs EVR -> Std: 0.8752, MRL: 0.9011
+Bucket Top 101-500 Top 50 PCs EVR -> Std: 0.5675, MRL: 0.6404
+Bucket Top 501-5000 Top 50 PCs EVR -> Std: 0.3942, MRL: 0.4740
+
+--- Exp 5: Angle between Consecutive 50 Dimensions (Mean Vector) ---
+Pair 000-050 vs 050-100 -> Cos Sim | Std: 0.2031, MRL: -0.0451
+Pair 050-100 vs 100-150 -> Cos Sim | Std: -0.1011, MRL: 0.2833
+Pair 100-150 vs 150-200 -> Cos Sim | Std: -0.0122, MRL: 0.0023
+Pair 150-200 vs 200-250 -> Cos Sim | Std: -0.2824, MRL: -0.0098
+Pair 200-250 vs 250-300 -> Cos Sim | Std: 0.1282, MRL: -0.0589
+
+--- Exp 6: Mimno & Thompson (2017) Experiments ---
+Avg Cos Sim to Mean | Std300: 0.4036, Std50: 0.4062, MRL300: 0.4305, MRL50: 0.6177
+Avg % Positive Components overall | Std: 51.20%, MRL: 49.68%
+
+--- Exp 7: L2 Norm Tracking by Frequency Bucket ---
+Level 50  Avg L2 | Top 100 Std: 1.35, MRL: 2.44
+Level 100 Avg L2 | Top 100 Std: 1.93, MRL: 2.65
+Level 150 Avg L2 | Top 100 Std: 2.39, MRL: 2.81
+Level 200 Avg L2 | Top 100 Std: 2.75, MRL: 2.94
+Level 250 Avg L2 | Top 100 Std: 3.04, MRL: 3.05
+Level 300 Avg L2 | Top 100 Std: 3.34, MRL: 3.16
+
+Analysis Complete! Plots saved to: c:\Users\abhay\Desktop\MRL TESTS\Results_and_Reports\geometry_plots

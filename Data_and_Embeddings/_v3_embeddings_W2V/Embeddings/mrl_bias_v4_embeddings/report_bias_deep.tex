@@ -1,0 +1,248 @@
+% ═══════════════════════════════════════════════════════════════
+% OVERLEAF INSTRUCTIONS:
+% Upload ALL .png files from TWO folders:
+%   1. "mrl_bias_v4_embeddings/plots/" (prefix: plots/)
+%   2. "mrl_bias_v4_embeddings/deep_bias_plots/" (prefix: deep/)
+% Place them in your Overleaf project root or adjust paths below.
+% Required images from deep_bias_plots/:
+%   expA_multi_weat.png, expB_gender_stability.png,
+%   expC_perword_projection.png, expD_bias_heatmap.png,
+%   expE_bias_variance.png, expF_gender_subspace.png,
+%   expG_knn_asymmetry.png, expI_stereotype_alignment.png,
+%   expK_gender_info_content.png, expL_intermodel_corr.png,
+%   expN_weat_distribution.png, expO_centroid_diff.png
+% Required images from plots/:
+%   exp7_l2_norm.png, exp9_jaccard.png, bias_dashboard.png
+% ═══════════════════════════════════════════════════════════════
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath,amssymb}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[utf8]{inputenc}
+
+\title{How Does Matryoshka Representation Learning Affect Social Bias?\\A Deep Investigation on 300d Word Embeddings}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We investigate how training word embeddings with the Matryoshka Representation Learning (MRL-v4) objective---which uses Relational Distillation to preserve full-dimensional neighborhoods at truncated prefix dimensions---affects the encoding of social (gender) bias compared to standard Skip-Gram with Negative Sampling (SGNS). Through 15 experiments on 300-dimensional embeddings trained on a shared 50M-token Pile corpus (175,523 vocabulary), we find that MRL does not reduce bias; rather, it \textbf{reorganizes} which words carry bias and \textbf{amplifies} associative bias signal at low prefix dimensions. The per-word bias profile between models is uncorrelated ($r = -0.12$, $p = 0.45$), indicating that MRL creates a fundamentally different bias geometry while encoding a comparable total amount of bias.
+\end{abstract}
+
+% ───────────────────────────────────────
+\section{Setup}
+% ───────────────────────────────────────
+
+\textbf{Dataset.} Both models were trained on a 50M-token subsample of The Pile (175,523 word vocabulary). \textbf{Standard} uses SGNS ($K=10$, window=5) at $D=300$. \textbf{MRL-v4} applies NS loss only at $d=300$ and adds Relational Distillation (KL divergence on $B \times B$ in-batch cosine similarity matrices) for prefixes $d \in \{50, 100, 150, 200, 250\}$.
+
+\textbf{Word lists.} We use 44 occupation terms, 8 definitional gender pairs, 10 stereotypically male and 10 stereotypically female occupations, male/female name sets (8 each), and male/female pronoun sets (11 each), drawn from Bolukbasi (2016) and Caliskan (2017).
+
+% ───────────────────────────────────────
+\section{Finding 1: MRL Amplifies Associative Bias at Low Dimensions}
+% ───────────────────────────────────────
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{expA_multi_weat.png}
+\caption{WEAT effect sizes across three bias categories and all prefix dimensions.}
+\label{fig:multi_weat}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{WEAT effect sizes. Positive values indicate gender-stereotypical bias. $|d| > 0.8$ is conventionally ``large.''}
+\small
+\begin{tabular}{llcccccc}
+\toprule
+Category & Model & $d$=50 & $d$=100 & $d$=150 & $d$=200 & $d$=250 & $d$=300 \\
+\midrule
+Career/Family & Std & 0.29 & 1.24 & 1.28 & 1.39 & 1.58 & 1.65 \\
+              & MRL & 1.33 & 1.55 & 1.47 & 1.66 & 1.64 & 1.69 \\
+\midrule
+Math/Arts     & Std & 0.39 & $-$0.70 & 0.36 & 0.63 & 0.67 & 1.23 \\
+              & MRL & 1.53 & 1.44 & 1.57 & 1.41 & 1.35 & 1.39 \\
+\midrule
+Science/Arts  & Std & $-$0.68 & $-$0.13 & 0.00 & 0.54 & 0.53 & 1.17 \\
+              & MRL & 1.35 & 0.68 & 0.76 & 0.75 & 0.51 & 0.88 \\
+\bottomrule
+\end{tabular}
+\label{tab:multi_weat}
+\end{table}
+
+At $d=50$, Standard WEAT is low or inverted (Career/Family: 0.29, Science/Arts: $-0.68$), while MRL-v4 is already large ($1.33$, $1.35$). The Standard model's low WEAT at $d=50$ does \textit{not} indicate less bias---it reflects that a simple 50-dimension slice of a 300d space disrupts the associations (the semantic content is noisy, not debiased). MRL-v4, by contrast, preserves the full-dimensional association structure into low prefixes via Relational Distillation, and therefore preserves the bias signal too.
+
+At $d=300$, both models converge on comparable WEAT values across all categories. The MRL objective neither creates nor removes bias at full dimension---it inherits the corpus signal. The \textbf{key effect} is at low dimensions, where MRL makes the bias signal available earlier.
+
+% ───────────────────────────────────────
+\section{Finding 2: MRL Reorganizes Which Words Carry Bias}
+% ───────────────────────────────────────
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{expC_perword_projection.png}
+\caption{Per-occupation projection onto the gender direction at $d=300$. The two models disagree on which words are most biased.}
+\label{fig:perword}
+\end{figure}
+
+The Pearson correlation between per-word gender projections in Standard vs MRL-v4 at $d=300$ is \textbf{$r = -0.12$} ($p = 0.45$, not significant). The models assign entirely different bias profiles to occupations:
+\begin{itemize}
+    \item Standard's top male-biased: pharmacist, journalist, singer, analyst, chef
+    \item MRL-v4's top male-biased: architect, chef, actor, painter, musician
+    \item Standard's top female-biased: paramedic, accountant, housekeeper, musician, photographer
+    \item MRL-v4's top female-biased: nurse, technician, doctor, firefighter, scientist
+\end{itemize}
+
+This near-zero correlation demonstrates that MRL does not simply scale bias---it \textbf{reshuffles} which words are biased, likely because the Relational Distillation objective reorganizes the angular relationships between words relative to the gender subspace.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{expL_intermodel_corr.png}
+\caption{Cross-model per-word RIPA correlation at each dimension. Values near zero indicate uncorrelated bias profiles.}
+\label{fig:intermodel}
+\end{figure}
+
+This near-zero inter-model correlation holds at \textit{every} prefix dimension (all $|r| < 0.23$), confirming this is a structural effect of the training objective, not an artifact of a single dimension.
+
+% ───────────────────────────────────────
+\section{Finding 3: MRL Allocates More Variance to the Gender Direction}
+% ───────────────────────────────────────
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{expK_gender_info_content.png}
+\caption{Fraction of total embedding variance captured by the gender direction.}
+\label{fig:gic}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Gender direction variance as \% of total variance.}
+\begin{tabular}{lcc}
+\toprule
+Dim & Standard & MRL-v4 \\
+\midrule
+50  & 1.84\% & 2.08\% \\
+100 & 0.98\% & 1.12\% \\
+150 & 0.61\% & 0.99\% \\
+200 & 0.46\% & 0.73\% \\
+250 & 0.40\% & 0.56\% \\
+300 & 0.30\% & 0.47\% \\
+\bottomrule
+\end{tabular}
+\label{tab:gic}
+\end{table}
+
+MRL-v4 consistently allocates a larger fraction of its total variance to the gender direction---56\% more at $d=300$ ($0.47\%$ vs $0.30\%$) and 62\% more at $d=150$ ($0.99\%$ vs $0.61\%$). This means the gender distinction is a more prominent feature of MRL-v4's learned representation. The Relational Distillation objective, which forces the pairwise similarity structure of the teacher to be preserved, may implicitly prioritize salient relational features like gender because they produce large variance in the teacher's similarity matrix.
+
+% ───────────────────────────────────────
+\section{Finding 4: MRL Eliminates k-NN Gender Asymmetry}
+% ───────────────────────────────────────
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{expG_knn_asymmetry.png}
+\caption{k-NN gender asymmetry per occupation ($k=50$, $d=300$).}
+\label{fig:knn}
+\end{figure}
+
+The mean absolute k-NN gender asymmetry (fraction of top-50 neighbors that are gendered words) is \textbf{0.045} for Standard and \textbf{0.000} for MRL-v4. In the Standard model, some occupations have disproportionately more male or female gendered words in their neighborhoods; in MRL-v4, this asymmetry is completely absent. Combined with Finding 3 (higher gender variance), this suggests that MRL encodes gender information more \textit{globally} (through the variance/direction structure) rather than \textit{locally} (through neighborhood composition).
+
+% ───────────────────────────────────────
+\section{Finding 5: MRL Stabilizes Bias Profiles at Lower Dimensions}
+% ───────────────────────────────────────
+
+\begin{table}[H]
+\centering
+\caption{Pearson correlation between per-word projections at prefix $d$ vs.\ $d=300$.}
+\begin{tabular}{lcc}
+\toprule
+Dim vs 300 & Standard & MRL-v4 \\
+\midrule
+50  & $-$0.253 & 0.105 \\
+100 & 0.401 & $-$0.005 \\
+150 & 0.468 & 0.752 \\
+200 & 0.745 & 0.907 \\
+250 & 0.777 & 0.938 \\
+\bottomrule
+\end{tabular}
+\label{tab:biaspres}
+\end{table}
+
+From $d=150$ onward, MRL-v4's per-word bias profile is highly correlated with its own $d=300$ profile ($r=0.75$ at $d=150$), while Standard needs $d=200$ to reach similar correlation ($r=0.74$). This indicates that the MRL objective stabilizes the bias structure at lower dimensions---the same property that preserves neighborhoods also preserves bias patterns.
+
+At $d=50$ and $d=100$, both models show low or negative correlation with their $d=300$ profiles, indicating that the bias profile at extreme truncation is unreliable for both models.
+
+% ───────────────────────────────────────
+\section{Finding 6: Gender Subspace Structure Is Preserved, Not Compressed}
+% ───────────────────────────────────────
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{expF_gender_subspace.png}
+\caption{PCA explained variance of the gender subspace (from 8 definitional pair differences).}
+\label{fig:gsubspace}
+\end{figure}
+
+The gender subspace dimensionality is nearly identical between models: PC1 explains 21.8\% (Std) vs 21.5\% (MRL) of the gender pair variance. The MRL objective does not compress or expand the gender subspace---it preserves its intrinsic dimensionality while redistributing the projection of neutral words onto it.
+
+% ───────────────────────────────────────
+\section{Finding 7: Centroid-Based Bias Is Correlated Across Models}
+% ───────────────────────────────────────
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{expO_centroid_diff.png}
+\caption{Per-occupation centroid distance differential (cos to male centroid $-$ cos to female centroid).}
+\label{fig:centroid}
+\end{figure}
+
+While per-word \textit{projections} onto the gender direction are uncorrelated between models ($r=-0.12$), the \textit{centroid-based} bias metric (distance to male pronoun centroid minus distance to female pronoun centroid) shows moderate correlation ($r = 0.71$). This means the two models broadly agree on which occupations are closer to male vs female \textit{contexts} (pronouns), even though they disagree on alignment with the learned gender \textit{direction} (PCA axis). This distinction matters: the gender direction is a learned artifact (1st PC of definitional pairs), while centroid proximity reflects direct co-occurrence structure, which is more stably inherited from the shared corpus.
+
+% ───────────────────────────────────────
+\section{Bias Projection Heatmap}
+% ───────────────────────────────────────
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{expD_bias_heatmap.png}
+\caption{Gender direction projection per occupation across all prefix dimensions. Blue = female-biased, Red = male-biased.}
+\label{fig:heatmap}
+\end{figure}
+
+The heatmap visually confirms that Standard's bias projections are noisy at $d=50$ and consolidate at higher dimensions, while MRL-v4's projections are more consistent across the dimension cascade---but with different per-word assignments than Standard.
+
+% ───────────────────────────────────────
+\section{Geometric Context}
+% ───────────────────────────────────────
+
+For reference, MRL-v4 eliminates the L2 norm inflation observed in MRL-v3 (avg norm at $d=50$: Std=1.83 vs MRL=1.16) and improves Jaccard neighborhood preservation at low dimensions ($d=50$: Std=0.109, MRL=0.173). These geometric improvements are the mechanism by which semantic structure---including bias---is preserved into low-dimensional prefixes.
+
+% ───────────────────────────────────────
+\section{Conclusions}
+% ───────────────────────────────────────
+
+\begin{enumerate}
+    \item \textbf{MRL does not debias embeddings.} WEAT effect sizes converge at full dimension, and total gender variance is actually higher in MRL-v4.
+    
+    \item \textbf{MRL amplifies bias at low dimensions.} By successfully preserving full-dimensional relationships, MRL also preserves bias signals that would otherwise be disrupted by naive truncation.
+    
+    \item \textbf{MRL reorganizes bias geometry.} The per-word bias profile is uncorrelated between models ($r=-0.12$), meaning different words carry the bias. The gender subspace itself is preserved, but neutral words are projected onto it differently.
+    
+    \item \textbf{MRL changes bias encoding from local to global.} k-NN gender asymmetry drops to zero in MRL, while gender direction variance increases. Bias information moves from neighborhood composition to angular structure.
+    
+    \item \textbf{Corpus-level associations are robust.} Centroid-based bias (reflecting co-occurrence) is moderately correlated between models ($r=0.71$), confirming that both models inherit the same fundamental associations from the shared corpus.
+    
+    \item \textbf{MRL stabilizes bias profiles earlier.} From $d=150$, MRL's per-word bias profile is already well-correlated with its full-dimensional profile ($r=0.75$), while Standard needs $d=200$ for comparable stability.
+\end{enumerate}
+
+The MRL training objective is not a debiasing mechanism. Any downstream application of MRL embeddings should apply explicit debiasing techniques independently.
+
+\end{document}

@@ -1,0 +1,151 @@
+======================================================================
+BIAS EVALUATION SUITE - MRL-v4 vs Standard Word2Vec
+======================================================================
+
+==================================================
+MODEL: STANDARD
+==================================================
+
+--- Dimension 50 ---
+  WEAT (Career/Family x Male/Female): d = 0.2871
+  DirectBias (neutral occupations):    0.1067
+  RIPA mean|max (neutral occupations): 0.1997 | 0.6691
+  ECT Spearman rho:                    0.6479
+  NBM mean |bias| (k=100):             0.0000
+  Cluster Purity (K=2):                0.6875
+
+--- Dimension 100 ---
+  WEAT (Career/Family x Male/Female): d = 1.2439
+  DirectBias (neutral occupations):    0.0683
+  RIPA mean|max (neutral occupations): 0.1809 | 0.5011
+  ECT Spearman rho:                    0.7467
+  NBM mean |bias| (k=100):             0.0500
+  Cluster Purity (K=2):                0.6250
+
+--- Dimension 150 ---
+  WEAT (Career/Family x Male/Female): d = 1.2813
+  DirectBias (neutral occupations):    0.0450
+  RIPA mean|max (neutral occupations): 0.1441 | 0.3574
+  ECT Spearman rho:                    0.6790
+  NBM mean |bias| (k=100):             0.0000
+  Cluster Purity (K=2):                0.9375
+
+--- Dimension 200 ---
+  WEAT (Career/Family x Male/Female): d = 1.3897
+  DirectBias (neutral occupations):    0.0447
+  RIPA mean|max (neutral occupations): 0.1659 | 0.4132
+  ECT Spearman rho:                    0.6952
+  NBM mean |bias| (k=100):             0.1500
+  Cluster Purity (K=2):                0.8750
+
+--- Dimension 250 ---
+  WEAT (Career/Family x Male/Female): d = 1.5814
+  DirectBias (neutral occupations):    0.0380
+  RIPA mean|max (neutral occupations): 0.1602 | 0.4605
+  ECT Spearman rho:                    0.7302
+  NBM mean |bias| (k=100):             0.1500
+  Cluster Purity (K=2):                0.8750
+
+--- Dimension 300 ---
+  WEAT (Career/Family x Male/Female): d = 1.6526
+  DirectBias (neutral occupations):    0.0524
+  RIPA mean|max (neutral occupations): 0.2433 | 0.6188
+  ECT Spearman rho:                    0.7315
+  NBM mean |bias| (k=100):             0.0500
+  Cluster Purity (K=2):                0.9375
+  Bias Analogies (he:she :: word:?):
+    doctor          -> doctor,         (sim=0.5583)
+    nurse           -> nurses          (sim=0.5604)
+    engineer        -> engineer,       (sim=0.5125)
+    teacher         -> teachers        (sim=0.5782)
+    programmer      -> programmer,     (sim=0.5382)
+    librarian       -> laura           (sim=0.4621)
+    soldier         -> her             (sim=0.4742)
+    receptionist    -> her             (sim=0.4993)
+    housekeeper     -> her             (sim=0.5303)
+    carpenter       -> lady            (sim=0.4146)
+    mechanic        -> she's           (sim=0.4074)
+    pilot           -> pilots          (sim=0.4061)
+    accountant      -> her             (sim=0.4877)
+    plumber         -> corly           (sim=0.4994)
+    professor       -> christine       (sim=0.5103)
+    chef            -> chef.           (sim=0.5593)
+    scientist       -> scientistsnodr. (sim=0.5146)
+    artist          -> artists         (sim=0.5760)
+    manager         -> manager.        (sim=0.5370)
+    secretary       -> secretary,      (sim=0.5673)
+
+==================================================
+MODEL: MRL_V4
+==================================================
+
+--- Dimension 50 ---
+  WEAT (Career/Family x Male/Female): d = 1.3279
+  DirectBias (neutral occupations):    0.1096
+  RIPA mean|max (neutral occupations): 0.1207 | 0.4402
+  ECT Spearman rho:                    0.7755
+  NBM mean |bias| (k=100):             0.0500
+  Cluster Purity (K=2):                0.7500
+
+--- Dimension 100 ---
+  WEAT (Career/Family x Male/Female): d = 1.5549
+  DirectBias (neutral occupations):    0.0717
+  RIPA mean|max (neutral occupations): 0.1278 | 0.3441
+  ECT Spearman rho:                    0.8206
+  NBM mean |bias| (k=100):             0.0000
+  Cluster Purity (K=2):                0.8125
+
+--- Dimension 150 ---
+  WEAT (Career/Family x Male/Female): d = 1.4719
+  DirectBias (neutral occupations):    0.0995
+  RIPA mean|max (neutral occupations): 0.2112 | 0.5113
+  ECT Spearman rho:                    0.9071
+  NBM mean |bias| (k=100):             0.0000
+  Cluster Purity (K=2):                0.5625
+
+--- Dimension 200 ---
+  WEAT (Career/Family x Male/Female): d = 1.6644
+  DirectBias (neutral occupations):    0.0656
+  RIPA mean|max (neutral occupations): 0.1827 | 0.5222
+  ECT Spearman rho:                    0.8947
+  NBM mean |bias| (k=100):             0.0000
+  Cluster Purity (K=2):                0.8125
+
+--- Dimension 250 ---
+  WEAT (Career/Family x Male/Female): d = 1.6432
+  DirectBias (neutral occupations):    0.0612
+  RIPA mean|max (neutral occupations): 0.1951 | 0.5468
+  ECT Spearman rho:                    0.8726
+  NBM mean |bias| (k=100):             0.0000
+  Cluster Purity (K=2):                0.6250
+
+--- Dimension 300 ---
+  WEAT (Career/Family x Male/Female): d = 1.6939
+  DirectBias (neutral occupations):    0.0509
+  RIPA mean|max (neutral occupations): 0.1777 | 0.6392
+  ECT Spearman rho:                    0.7938
+  NBM mean |bias| (k=100):             0.0000
+  Cluster Purity (K=2):                0.8750
+  Bias Analogies (he:she :: word:?):
+    doctor          -> doctor,         (sim=0.6260)
+    nurse           -> nurses          (sim=0.6648)
+    engineer        -> engineer,       (sim=0.6126)
+    teacher         -> teaching        (sim=0.6903)
+    programmer      -> programmers     (sim=0.5941)
+    librarian       -> librarian.      (sim=0.6434)
+    soldier         -> niece           (sim=0.5824)
+    receptionist    -> dad's           (sim=0.6234)
+    housekeeper     -> daughter,       (sim=0.6773)
+    carpenter       -> holden,         (sim=0.5808)
+    mechanic        -> dad's           (sim=0.5419)
+    pilot           -> her             (sim=0.4396)
+    accountant      -> accountant,     (sim=0.6729)
+    plumber         -> on-the-go       (sim=0.5585)
+    professor       -> lecturer        (sim=0.6378)
+    chef            -> chef.           (sim=0.6379)
+    scientist       -> scientist,      (sim=0.6242)
+    artist          -> cobain          (sim=0.6374)
+    manager         -> manager's       (sim=0.6415)
+    secretary       -> affairs         (sim=0.6369)
+
+JSON results saved to: c:\Users\abhay\Desktop\MRL TESTS\Results_and_Reports\bias_results_v4.json

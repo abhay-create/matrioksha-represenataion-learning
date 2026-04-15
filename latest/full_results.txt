@@ -1,0 +1,225 @@
+======================================================================
+GEOMETRY EVALUATION - 768d Embeddings
+======================================================================
+
+--- Exp 1: Mean Embedding Cosine Similarity ---
+  d= 64: cos(mean_std, mean_mrl) = -0.1769
+  d=128: cos(mean_std, mean_mrl) = -0.0328
+  d=256: cos(mean_std, mean_mrl) = 0.0039
+  d=384: cos(mean_std, mean_mrl) = -0.0336
+  d=512: cos(mean_std, mean_mrl) = -0.0246
+  d=768: cos(mean_std, mean_mrl) = -0.0299
+
+--- Exp 2: Cross Cosine Similarity ---
+  d= 64: Avg(Std_w, Mrl_mean)=-0.0813, Avg(Mrl_w, Std_mean)=-0.0661
+  d=128: Avg(Std_w, Mrl_mean)=-0.0111, Avg(Mrl_w, Std_mean)=-0.0121
+  d=256: Avg(Std_w, Mrl_mean)=0.0043, Avg(Mrl_w, Std_mean)=0.0021
+  d=384: Avg(Std_w, Mrl_mean)=-0.0136, Avg(Mrl_w, Std_mean)=-0.0149
+  d=512: Avg(Std_w, Mrl_mean)=-0.0108, Avg(Mrl_w, Std_mean)=-0.0112
+  d=768: Avg(Std_w, Mrl_mean)=-0.0144, Avg(Mrl_w, Std_mean)=-0.0150
+
+--- Exp 3: PCA (Full Vocab Sample) ---
+  Top 50 PCs EVR -> Std: 0.7821, MRL: 0.7803
+
+--- Exp 4: PCA by Frequency Bucket ---
+  Top_100 Top 50 PCs EVR -> Std: 0.8624, MRL: 0.8778
+  Top_101-500 Top 50 PCs EVR -> Std: 0.6295, MRL: 0.6416
+  Top_501-5000 Top 50 PCs EVR -> Std: 0.5617, MRL: 0.5791
+
+--- Exp 5: Consecutive Chunk Angles ---
+  Chunk 0-64 vs 64-128: Std=-0.1972, MRL=-0.1096
+  Chunk 64-128 vs 128-192: Std=-0.0372, MRL=-0.0734
+  Chunk 128-192 vs 192-256: Std=0.0890, MRL=0.0624
+  Chunk 192-256 vs 256-320: Std=-0.0107, MRL=-0.1133
+  Chunk 256-320 vs 320-384: Std=-0.0525, MRL=-0.1228
+  Chunk 320-384 vs 384-448: Std=-0.1198, MRL=-0.0273
+  Chunk 384-448 vs 448-512: Std=0.0998, MRL=0.1292
+  Chunk 448-512 vs 512-576: Std=-0.0593, MRL=0.1930
+  Chunk 512-576 vs 576-640: Std=-0.0736, MRL=-0.0688
+  Chunk 576-640 vs 640-704: Std=0.0367, MRL=-0.0044
+  Chunk 640-704 vs 704-768: Std=0.0968, MRL=0.0773
+
+--- Exp 6a: Narrow Cone (Mimno & Thompson) ---
+  d= 64: Std cone=0.4768, MRL cone=0.3656
+  d=128: Std cone=0.4808, MRL cone=0.4036
+  d=256: Std cone=0.4775, MRL cone=0.4578
+  d=384: Std cone=0.4760, MRL cone=0.4798
+  d=512: Std cone=0.4769, MRL cone=0.4848
+  d=768: Std cone=0.4794, MRL cone=0.5019
+
+--- Exp 6b: Non-Negativity ---
+  Avg % positive: Std=49.52%, MRL=50.45%
+
+--- Exp 7: L2 Norm by Frequency Bucket ---
+  Top_100 d=64: Std=0.8509 MRL=0.6793 | d=768: Std=2.9922 MRL=2.9823
+  Top_101-500 d=64: Std=0.9436 MRL=0.6301 | d=768: Std=3.2800 MRL=3.2480
+  Top_501-5000 d=64: Std=1.0030 MRL=0.6073 | d=768: Std=3.4748 MRL=3.4239
+  Full_10k d=64: Std=1.0123 MRL=0.5900 | d=768: Std=3.5055 MRL=3.4378
+
+--- Exp 8: WCSS (K-Means Inertia) ---
+  WCSS Top_100 d=64: Std=0.5159 MRL=0.4924
+  WCSS Top_101-500 d=64: Std=0.6421 MRL=0.6124
+  WCSS Top_501-5000 d=64: Std=0.5892 MRL=0.5770
+  WCSS Full_10k d=64: Std=0.5804 MRL=0.5788
+
+--- Exp 9: Jaccard Neighborhood Preservation ---
+  d= 64: Std Jaccard=0.2341, MRL Jaccard=0.1536
+  d=128: Std Jaccard=0.3604, MRL Jaccard=0.2102
+  d=256: Std Jaccard=0.5181, MRL Jaccard=0.3184
+  d=384: Std Jaccard=0.6271, MRL Jaccard=0.4208
+  d=512: Std Jaccard=0.7200, MRL Jaccard=0.5167
+  d=768: Std Jaccard=1.0000, MRL Jaccard=1.0000
+
+--- Exp 10: SVD Spectrum ---
+  Top 10 SVs: Std=8.80%, MRL=8.97%
+
+======================================================================
+BIAS EVALUATION - 768d Embeddings
+======================================================================
+  In-vocab: Male=8 Female=8 Career=8 Family=8 Neutral=20
+
+==================================================
+MODEL: STANDARD
+==================================================
+
+--- Dimension 64 ---
+  WEAT:         1.6766
+  DirectBias:   0.1186
+  RIPA m|x:     0.1076 | 0.2059
+  ECT:          0.8183
+  NBM:          0.0500
+  ClusterPurity:0.5625
+
+--- Dimension 128 ---
+  WEAT:         1.4135
+  DirectBias:   0.1170
+  RIPA m|x:     0.1555 | 0.3857
+  ECT:          0.8278
+  NBM:          0.0500
+  ClusterPurity:0.5625
+
+--- Dimension 256 ---
+  WEAT:         1.7270
+  DirectBias:   0.1063
+  RIPA m|x:     0.2014 | 0.6554
+  ECT:          0.7851
+  NBM:          0.0000
+  ClusterPurity:0.7500
+
+--- Dimension 384 ---
+  WEAT:         1.7469
+  DirectBias:   0.1079
+  RIPA m|x:     0.2503 | 0.7745
+  ECT:          0.7297
+  NBM:          0.0000
+  ClusterPurity:0.9375
+
+--- Dimension 512 ---
+  WEAT:         1.7998
+  DirectBias:   0.1054
+  RIPA m|x:     0.2807 | 0.7527
+  ECT:          0.7212
+  NBM:          0.0000
+  ClusterPurity:1.0000
+
+--- Dimension 768 ---
+  WEAT:         1.7080
+  DirectBias:   0.0971
+  RIPA m|x:     0.3201 | 0.8102
+  ECT:          0.7622
+  NBM:          0.0000
+  ClusterPurity:0.9375
+  Analogies (he:she :: word:?):
+    doctor          -> doctor.         (sim=0.6278)
+    nurse           -> care.           (sim=0.6471)
+    engineer        -> engineer,       (sim=0.6027)
+    teacher         -> teaching        (sim=0.6716)
+    programmer      -> programmer.     (sim=0.6528)
+    librarian       -> instructors,    (sim=0.6576)
+    soldier         -> her.            (sim=0.5818)
+    receptionist    -> texted          (sim=0.6528)
+    housekeeper     -> husband,        (sim=0.6923)
+    carpenter       -> lucy            (sim=0.6171)
+    mechanic        -> hobby           (sim=0.5921)
+    pilot           -> care.           (sim=0.4721)
+    accountant      -> accountant,     (sim=0.6927)
+    plumber         -> shower,         (sim=0.6590)
+    professor       -> ph.d.,          (sim=0.6395)
+    chef            -> chef.           (sim=0.6692)
+    scientist       -> scientistsnodr. (sim=0.6371)
+    artist          -> artist,         (sim=0.6539)
+    manager         -> manager.        (sim=0.6423)
+    secretary       -> secretary,      (sim=0.6572)
+
+==================================================
+MODEL: MRL_V4
+==================================================
+
+--- Dimension 64 ---
+  WEAT:         1.5759
+  DirectBias:   0.0922
+  RIPA m|x:     0.0464 | 0.1519
+  ECT:          0.5225
+  NBM:          0.1000
+  ClusterPurity:0.8750
+
+--- Dimension 128 ---
+  WEAT:         1.4301
+  DirectBias:   0.0864
+  RIPA m|x:     0.0704 | 0.2056
+  ECT:          0.7418
+  NBM:          0.0500
+  ClusterPurity:1.0000
+
+--- Dimension 256 ---
+  WEAT:         1.1502
+  DirectBias:   0.0630
+  RIPA m|x:     0.0906 | 0.3513
+  ECT:          0.7341
+  NBM:          0.1000
+  ClusterPurity:1.0000
+
+--- Dimension 384 ---
+  WEAT:         1.6077
+  DirectBias:   0.0843
+  RIPA m|x:     0.1726 | 0.4478
+  ECT:          0.8309
+  NBM:          0.1000
+  ClusterPurity:0.9375
+
+--- Dimension 512 ---
+  WEAT:         1.6560
+  DirectBias:   0.0910
+  RIPA m|x:     0.2382 | 0.5114
+  ECT:          0.8703
+  NBM:          0.0000
+  ClusterPurity:1.0000
+
+--- Dimension 768 ---
+  WEAT:         1.6947
+  DirectBias:   0.0655
+  RIPA m|x:     0.2017 | 0.3958
+  ECT:          0.8129
+  NBM:          0.0000
+  ClusterPurity:0.9375
+  Analogies (he:she :: word:?):
+    doctor          -> doctor,         (sim=0.6872)
+    nurse           -> nurses          (sim=0.6689)
+    engineer        -> engineer,       (sim=0.6792)
+    teacher         -> teaching        (sim=0.6687)
+    programmer      -> programmer.     (sim=0.6648)
+    librarian       -> graders.        (sim=0.6572)
+    soldier         -> husband,        (sim=0.6002)
+    receptionist    -> son's           (sim=0.6343)
+    housekeeper     -> sisters,        (sim=0.6239)
+    carpenter       -> emily,          (sim=0.6363)
+    mechanic        -> she's           (sim=0.5955)
+    pilot           -> home-based      (sim=0.4970)
+    accountant      -> katherine       (sim=0.6599)
+    plumber         -> bathroom,       (sim=0.6101)
+    professor       -> lecturer        (sim=0.6759)
+    chef            -> chef.           (sim=0.6822)
+    scientist       -> biologist       (sim=0.6252)
+    artist          -> artist.         (sim=0.6986)
+    manager         -> manager.        (sim=0.6110)
+    secretary       -> secretary,      (sim=0.6502)

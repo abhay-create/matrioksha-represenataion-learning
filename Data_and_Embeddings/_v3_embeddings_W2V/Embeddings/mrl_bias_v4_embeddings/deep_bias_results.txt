@@ -1,0 +1,155 @@
+
+======================================================================
+EXP A: Multi-Category WEAT
+======================================================================
+
+  Career/Family:
+    d=50: Std=0.2871, MRL=1.3279, Diff=+1.0408
+    d=100: Std=1.2439, MRL=1.5549, Diff=+0.3110
+    d=150: Std=1.2813, MRL=1.4719, Diff=+0.1906
+    d=200: Std=1.3897, MRL=1.6644, Diff=+0.2747
+    d=250: Std=1.5814, MRL=1.6432, Diff=+0.0617
+    d=300: Std=1.6526, MRL=1.6939, Diff=+0.0413
+
+  Math/Arts:
+    d=50: Std=0.3859, MRL=1.5315, Diff=+1.1456
+    d=100: Std=-0.6979, MRL=1.4378, Diff=+2.1356
+    d=150: Std=0.3628, MRL=1.5744, Diff=+1.2116
+    d=200: Std=0.6310, MRL=1.4113, Diff=+0.7803
+    d=250: Std=0.6747, MRL=1.3515, Diff=+0.6767
+    d=300: Std=1.2330, MRL=1.3884, Diff=+0.1554
+
+  Science/Arts:
+    d=50: Std=-0.6840, MRL=1.3465, Diff=+2.0305
+    d=100: Std=-0.1310, MRL=0.6751, Diff=+0.8060
+    d=150: Std=0.0036, MRL=0.7567, Diff=+0.7531
+    d=200: Std=0.5448, MRL=0.7484, Diff=+0.2037
+    d=250: Std=0.5341, MRL=0.5116, Diff=-0.0225
+    d=300: Std=1.1739, MRL=0.8839, Diff=-0.2900
+
+======================================================================
+EXP B: Gender Direction Stability Across Dimensions
+======================================================================
+  d=50: Std stability=0.2652, MRL stability=0.3712
+  d=100: Std stability=0.9666, MRL stability=0.5924
+  d=150: Std stability=0.9783, MRL stability=0.9656
+  d=200: Std stability=0.9789, MRL stability=0.9890
+  d=250: Std stability=0.9685, MRL stability=0.9826
+  d=300: Std stability=1.0000, MRL stability=1.0000
+
+======================================================================
+EXP C: Per-Word Gender Projection at d=300
+======================================================================
+  Pearson correlation of per-word projections (Std vs MRL): r=-0.1172, p=0.448602
+  Top 5 male-biased (Std): ['pharmacist', 'journalist', 'singer', 'analyst', 'chef']
+  Top 5 female-biased (Std): ['paramedic', 'accountant', 'housekeeper', 'musician', 'photographer']
+  Top 5 male-biased (MRL): ['architect', 'chef', 'actor', 'painter', 'musician']
+  Top 5 female-biased (MRL): ['nurse', 'technician', 'doctor', 'firefighter', 'scientist']
+
+======================================================================
+EXP D: Bias Projection Heatmap
+======================================================================
+
+======================================================================
+EXP E: Bias Variance (Spread of projections)
+======================================================================
+  d=50: Std projection std=0.2266, MRL projection std=0.1258
+  d=100: Std projection std=0.1931, MRL projection std=0.1609
+  d=150: Std projection std=0.1886, MRL projection std=0.2003
+  d=200: Std projection std=0.1767, MRL projection std=0.1990
+  d=250: Std projection std=0.2064, MRL projection std=0.2127
+  d=300: Std projection std=0.2173, MRL projection std=0.2179
+
+======================================================================
+EXP F: Gender Subspace Dimensionality
+======================================================================
+  Explained variance ratios (gender PCA):
+    PC1: Std=0.2176, MRL=0.2150
+    PC2: Std=0.1777, MRL=0.1955
+    PC3: Std=0.1605, MRL=0.1703
+    PC4: Std=0.1406, MRL=0.1553
+    PC5: Std=0.1354, MRL=0.1013
+    PC6: Std=0.0984, MRL=0.0867
+    PC7: Std=0.0697, MRL=0.0759
+    PC8: Std=0.0000, MRL=0.0000
+
+======================================================================
+EXP G: k-NN Gender Asymmetry (k=50)
+======================================================================
+  Mean |asymmetry| Std: 0.0455
+  Mean |asymmetry| MRL: 0.0000
+  Pearson correlation of asymmetry (Std vs MRL): r=nan
+
+======================================================================
+EXP H: Definitional Pair Cosine Distances
+======================================================================
+  d=50 Standard: avg cos(male,female) = 0.5837
+  d=100 Standard: avg cos(male,female) = 0.5986
+  d=150 Standard: avg cos(male,female) = 0.6153
+  d=200 Standard: avg cos(male,female) = 0.6320
+  d=250 Standard: avg cos(male,female) = 0.6284
+  d=300 Standard: avg cos(male,female) = 0.6188
+  d=50 MRL-v4: avg cos(male,female) = 0.5692
+  d=100 MRL-v4: avg cos(male,female) = 0.5802
+  d=150 MRL-v4: avg cos(male,female) = 0.6271
+  d=200 MRL-v4: avg cos(male,female) = 0.6842
+  d=250 MRL-v4: avg cos(male,female) = 0.6556
+  d=300 MRL-v4: avg cos(male,female) = 0.6419
+
+======================================================================
+EXP I: Stereotype Alignment Score
+======================================================================
+  d=50: Std male_stereo=+0.0280 female_stereo=-0.1545 | MRL male_stereo=+0.0827 female_stereo=-0.0118
+  d=100: Std male_stereo=+0.1357 female_stereo=+0.0360 | MRL male_stereo=-0.0651 female_stereo=-0.0120
+  d=150: Std male_stereo=-0.0400 female_stereo=-0.0092 | MRL male_stereo=+0.2085 female_stereo=+0.0482
+  d=200: Std male_stereo=-0.0420 female_stereo=+0.0895 | MRL male_stereo=+0.1436 female_stereo=+0.0822
+  d=250: Std male_stereo=-0.0034 female_stereo=-0.0451 | MRL male_stereo=+0.0981 female_stereo=+0.1047
+  d=300: Std male_stereo=-0.2558 female_stereo=-0.2189 | MRL male_stereo=+0.1153 female_stereo=+0.0318
+
+======================================================================
+EXP J: Bias Preservation Correlation (per-word projection correlation across dims)
+======================================================================
+  d=50 vs d=300: Std r=-0.2525, MRL r=0.1053
+  d=100 vs d=300: Std r=0.4005, MRL r=-0.0050
+  d=150 vs d=300: Std r=0.4683, MRL r=0.7519
+  d=200 vs d=300: Std r=0.7445, MRL r=0.9067
+  d=250 vs d=300: Std r=0.7773, MRL r=0.9380
+
+======================================================================
+EXP K: Gender Information Content
+======================================================================
+  d=50: Std gender_var=1.8382%, MRL gender_var=2.0811%
+  d=100: Std gender_var=0.9846%, MRL gender_var=1.1168%
+  d=150: Std gender_var=0.6124%, MRL gender_var=0.9927%
+  d=200: Std gender_var=0.4618%, MRL gender_var=0.7260%
+  d=250: Std gender_var=0.4038%, MRL gender_var=0.5552%
+  d=300: Std gender_var=0.3032%, MRL gender_var=0.4726%
+
+======================================================================
+EXP L: Inter-Model Bias Correlation
+======================================================================
+  d=50: Pearson r(Std proj, MRL proj) = 0.2209
+  d=100: Pearson r(Std proj, MRL proj) = 0.0303
+  d=150: Pearson r(Std proj, MRL proj) = -0.0625
+  d=200: Pearson r(Std proj, MRL proj) = -0.0673
+  d=250: Pearson r(Std proj, MRL proj) = 0.2293
+  d=300: Pearson r(Std proj, MRL proj) = -0.1172
+
+======================================================================
+EXP M: Occupation Clustering
+======================================================================
+  Standard d=50: C0(18 words, 3M/4F stereo) C1(26 words, 7M/6F stereo)
+  MRL-v4 d=50: C0(22 words, 4M/6F stereo) C1(22 words, 6M/4F stereo)
+  Standard d=300: C0(26 words, 5M/7F stereo) C1(18 words, 5M/3F stereo)
+  MRL-v4 d=300: C0(31 words, 7M/7F stereo) C1(13 words, 3M/3F stereo)
+
+======================================================================
+EXP N: Individual WEAT s(w) Value Distributions at d=300
+======================================================================
+  Std: mean s(w)=0.0002, std=0.0342
+  MRL: mean s(w)=-0.0316, std=0.0435
+
+======================================================================
+EXP O: Male vs Female Centroid Distance for Stereotype Words
+======================================================================
+  Pearson r(centroid_diff Std vs MRL) = 0.7111
